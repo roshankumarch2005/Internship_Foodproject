@@ -11,6 +11,12 @@ const connectDatabase = require("./config/database.js");
 //connecting to database
 connectDatabase(); //calling is must
 
-app.listen(process.env.PORT,() => {
-    console.log(`server is started on PORT: ${process.env.PORT}`);
-})
+// 👉 FIX: Replaced process.env.PORT with hardcoded 4000 and 127.0.0.1
+// start server
+app.listen(8080, "127.0.0.1", () => {
+    console.log(`SERVER STARTED ON http://127.0.0.1:8080`);
+});
+
+// app.listen(process.env.PORT,() => {
+//     console.log(`server is started on PORT: ${process.env.PORT}`);
+// })
