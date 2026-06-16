@@ -10,7 +10,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors"); 
 const auth = require("./routes/auth.js"); 
-const restaurant = require("./routes/restaurants.js")
+const restaurant = require("./routes/restaurant.js")
 
 app.use(cors()); 
 
