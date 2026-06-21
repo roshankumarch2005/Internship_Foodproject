@@ -1,35 +1,51 @@
-//configure express and middleware
-//import packages
-//create express app
-    //client => app => route => response
-//configure middlware (runs btw req and res)
-    //req => middleware => route => res
-//export the app
-
 const express = require("express");
 const app = express();
-const cors = require("cors"); 
-const auth = require("./routes/auth.js"); 
-const restaurant = require("./routes/restaurant.js")
 
-app.use(cors()); 
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload");
+const cors = require("cors");
 
-// Increased limit for Base64 image uploads
-app.use(express.json({ limit: "50mb" })); 
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+const errorMiddleware = require("./middlewares/errors");
 
-app.use("/api/v1/users", auth);
+// Routes
+const foodRouter = require("./routes/foodItem");
+const restaurant = require("./routes/restaurant");
+const menuRouter = require("./routes/menu");
+const order = require("./routes/order");
+const auth = require("./routes/auth");
+const payment = require("./routes/payment");
+const cart = require("./routes/cart");
+
+// Middlewares
+app.use(cors());
+app.use(cookieParser());
+app.use(fileUpload());
+
+app.use(express.json({ limit: "30kb" }));
+app.use(express.urlencoded({ extended: true, limit: "30kb" }));
+
+// Routes
+app.use("/api/v1/eats", foodRouter);
+app.use("/api/v1/eats/menus", menuRouter);
 app.use("/api/v1/eats/stores", restaurant);
- 
+app.use("/api/v1/eats/orders", order);
+app.use("/api/v1/users", auth);
+app.use("/api/v1", payment);
+app.use("/api/v1/eats/cart", cart);
 
-// GLOBAL ERROR HANDLER
-app.use((err, req, res, next) => {
-    console.log("ERROR CAUGHT IN APP.JS:", err.message); 
-    res.status(err.statusCode || 500).json({
-        success: false,
-        message: err.message || "Internal Server Error"
-    });
+
+// View Engine
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+
+// 404 Handler
+app.use((req, res, next) => {
+  next(new ErrorHandler(`Route ${req.originalUrl} not found`, 404));
 });
 
-module.exports = app;
 
+// Global Error Handler
+app.use(errorMiddleware);
+
+module.exports = app;

@@ -70,7 +70,7 @@ exports.processPayment = catchAsyncErrors(async (req, res, next) => {
 });
 
 //send the strip api key
-exports.SendStripeApi = catchAsyncErrors(async(req, res, next)=>{
+exports.sendStripeApi = catchAsyncErrors(async(req, res, next)=>{
     res.status(200).json({
         stripeApiKey: process.env.STRIPE_API_KEY
     })

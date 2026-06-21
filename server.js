@@ -1,24 +1,32 @@
-//start the server
-//will load env variables
+const app = require("./app");
+const connectDatabase = require("./config/database");
 const dotenv = require("dotenv");
 
-//loading env variable
-dotenv.config({path:"./config/config.env"});
+// Handle Uncaught Exceptions
+process.on("uncaughtException", (err) => {
+  console.log(`ERROR: ${err.stack}`);
+  console.log("Shutting down server due to uncaught exception");
+  process.exit(1);
+});
 
-const app = require("./app");
-const connectDatabase = require("./config/database.js"); 
+// Setting up config file
+dotenv.config({ path: "./config/config.env" });
 
-//connecting to database
-connectDatabase(); //calling is must
+// Connecting to database
+connectDatabase();
 
-// 👉 FIX: Replaced process.env.PORT with hardcoded 4000 and 127.0.0.1
-// start server
-// app.listen(8080, "127.0.0.1", () => {
-//     console.log(`SERVER STARTED ON http://127.0.0.1:8080`);
-// });
+const server = app.listen(process.env.PORT, () => {
+  console.log(
+    `Server started on PORT: ${process.env.PORT} in ${process.env.NODE_ENV} mode.`
+  );
+});
 
-app.listen(process.env.PORT,() => {
-    console.log(`server is started on PORT: ${process.env.PORT}`);
-})
+// Handle Unhandled Promise Rejections
+process.on("unhandledRejection", (err) => {
+  console.log(`ERROR: ${err.message}`);
+  console.log("Shutting down the server due to Unhandled Promise rejection");
 
-//need to change aat last this is only for postman testing
+  server.close(() => {
+    process.exit(1);
+  });
+});
