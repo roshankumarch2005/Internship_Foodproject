@@ -15,7 +15,7 @@ exports.getAllRestaurants = catchAsyncErrors(async(req,res,next) => {
     res.status(200).json({              //sending successful response back to client
         status: "Success",
         count: restaurants.length,
-        restaurant: restaurants
+        restaurants: restaurants
     })
 })
 
